@@ -17,9 +17,11 @@ package com.tj.carplayer
 
 import android.Manifest.permission.*
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
@@ -48,7 +50,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStatusBar()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         
@@ -65,8 +66,13 @@ class MainActivity : AppCompatActivity() {
         }
         
 //        replaceDemoFragment(DemoMultiCameraFragment())
-        replaceDemoFragment(DemoFragment())
+        replaceDemoFragment(com.tj.carplayer.SimpleCameraFragment())
 //        replaceDemoFragment(GlSurfaceFragment())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setStatusBar()
     }
 
     override fun onStart() {
@@ -115,7 +121,7 @@ class MainActivity : AppCompatActivity() {
                     return
                 }
 //                replaceDemoFragment(DemoMultiCameraFragment())
-                replaceDemoFragment(DemoFragment())
+                replaceDemoFragment(com.tj.carplayer.SimpleCameraFragment())
 //                replaceDemoFragment(GlSurfaceFragment())
             }
             REQUEST_STORAGE -> {
@@ -168,14 +174,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setStatusBar() {
-        // Commented out due to ImmersionBar dependency issues
-        // immersionBar = ImmersionBar.with(this)
-        //     .statusBarDarkFont(false)
-        //     .statusBarColor(R.color.black)
-        //     .navigationBarColor(R.color.black)
-        //     .fitsSystemWindows(true)
-        //     .keyboardEnable(true)
-        // immersionBar?.init()
+        try {
+            // Make the app fullscreen
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.setDecorFitsSystemWindows(false)
+                window.insetsController?.let { controller ->
+                    controller.hide(android.view.WindowInsets.Type.statusBars() or android.view.WindowInsets.Type.navigationBars())
+                    controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                } ?: run {
+                    Log.w(TAG, "WindowInsetsController is null, falling back to legacy method")
+                    setStatusBarLegacy()
+                }
+            } else {
+                setStatusBarLegacy()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting status bar", e)
+            // Fallback to legacy method
+            setStatusBarLegacy()
+        }
+    }
+    
+    private fun setStatusBarLegacy() {
+        try {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting status bar legacy", e)
+        }
     }
 
 }
