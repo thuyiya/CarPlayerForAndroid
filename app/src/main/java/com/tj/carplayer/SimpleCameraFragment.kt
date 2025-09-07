@@ -39,6 +39,9 @@ class SimpleCameraFragment : CameraFragment(), ICameraStateCallBack {
         // Hide the UVC logo initially
         mViewBinding.uvcLogoIv.visibility = View.GONE
         
+        // Show error message initially (will be hidden when camera opens)
+        showErrorMessage(true)
+        
         // Set up camera with 720p resolution
         setupCamera()
     }
@@ -49,7 +52,17 @@ class SimpleCameraFragment : CameraFragment(), ICameraStateCallBack {
             
         } catch (e: Exception) {
             Log.e(TAG, "Failed to setup camera", e)
-            ToastUtils.show("Failed to start camera: ${e.message}")
+            showErrorMessage(true)
+        }
+    }
+    
+    private fun showErrorMessage(show: Boolean) {
+        if (show) {
+            mViewBinding.errorMessageContainer.visibility = View.VISIBLE
+            mViewBinding.uvcLogoIv.visibility = View.GONE
+            mViewBinding.frameRateTv.visibility = View.GONE
+        } else {
+            mViewBinding.errorMessageContainer.visibility = View.GONE
         }
     }
     
@@ -83,21 +96,16 @@ class SimpleCameraFragment : CameraFragment(), ICameraStateCallBack {
         when (code) {
             ICameraStateCallBack.State.OPENED -> {
                 Log.d(TAG, "Camera opened successfully")
-                mViewBinding.uvcLogoIv.visibility = View.GONE
+                showErrorMessage(false) // Hide error message when camera opens
                 mViewBinding.frameRateTv.visibility = View.VISIBLE
-                ToastUtils.show("Camera opened")
             }
             ICameraStateCallBack.State.CLOSED -> {
                 Log.d(TAG, "Camera closed")
-                mViewBinding.uvcLogoIv.visibility = View.VISIBLE
-                mViewBinding.frameRateTv.visibility = View.GONE
-                ToastUtils.show("Camera closed")
+                showErrorMessage(true) // Show error message when camera closes
             }
             ICameraStateCallBack.State.ERROR -> {
                 Log.e(TAG, "Camera error: $msg")
-                mViewBinding.uvcLogoIv.visibility = View.VISIBLE
-                mViewBinding.frameRateTv.visibility = View.GONE
-                ToastUtils.show("Camera error: $msg")
+                showErrorMessage(true) // Show error message when camera has error
             }
         }
     }
