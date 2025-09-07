@@ -23,6 +23,21 @@
         android:src="@mipmap/ic_uvc"
         android:visibility="gone" />
 
+    <!-- Camera Status Display (top-center) -->
+    <TextView
+        android:id="@+id/cameraStatusTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="Status: Camera Offline"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:background="#80000000"
+        android:padding="12dp"
+        android:fontFamily="sans-serif-medium" />
+
     <!-- Frame Rate Display (optional, top-left corner) -->
     <TextView
         android:id="@+id/frameRateTv"

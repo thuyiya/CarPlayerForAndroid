@@ -39,6 +39,9 @@ class SimpleCameraFragment : CameraFragment(), ICameraStateCallBack {
         // Hide the UVC logo initially
         mViewBinding.uvcLogoIv.visibility = View.GONE
         
+        // Set initial camera status
+        updateCameraStatus("Camera Offline")
+        
         // Show error message initially (will be hidden when camera opens)
         showErrorMessage(true)
         
@@ -52,6 +55,7 @@ class SimpleCameraFragment : CameraFragment(), ICameraStateCallBack {
             
         } catch (e: Exception) {
             Log.e(TAG, "Failed to setup camera", e)
+            updateCameraStatus("Camera Setup Error")
             showErrorMessage(true)
         }
     }
@@ -64,6 +68,10 @@ class SimpleCameraFragment : CameraFragment(), ICameraStateCallBack {
         } else {
             mViewBinding.errorMessageContainer.visibility = View.GONE
         }
+    }
+    
+    private fun updateCameraStatus(status: String) {
+        mViewBinding.cameraStatusTv.text = "Status: $status"
     }
     
     override fun getCameraViewContainer(): ViewGroup {
@@ -96,15 +104,18 @@ class SimpleCameraFragment : CameraFragment(), ICameraStateCallBack {
         when (code) {
             ICameraStateCallBack.State.OPENED -> {
                 Log.d(TAG, "Camera opened successfully")
+                updateCameraStatus("Live")
                 showErrorMessage(false) // Hide error message when camera opens
                 mViewBinding.frameRateTv.visibility = View.VISIBLE
             }
             ICameraStateCallBack.State.CLOSED -> {
                 Log.d(TAG, "Camera closed")
+                updateCameraStatus("Offline")
                 showErrorMessage(true) // Show error message when camera closes
             }
             ICameraStateCallBack.State.ERROR -> {
                 Log.e(TAG, "Camera error: $msg")
+                updateCameraStatus("Camera Error")
                 showErrorMessage(true) // Show error message when camera has error
             }
         }
