@@ -16,8 +16,10 @@
 package com.tj.carplayer
 
 import android.Manifest.permission.*
+import android.content.Intent
 import android.os.Bundle
 import android.os.PowerManager
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker
@@ -26,6 +28,7 @@ import androidx.fragment.app.Fragment
 import com.jiangdg.ausbc.utils.ToastUtils
 import com.jiangdg.ausbc.utils.Utils
 import com.tj.carplayer.databinding.ActivityMainBinding
+import com.tj.carplayer.service.USBDetectionService
 
 /**
  * Demos of camera usage
@@ -36,12 +39,31 @@ class MainActivity : AppCompatActivity() {
     private var mWakeLock: PowerManager.WakeLock? = null
     // private var immersionBar: ImmersionBar? = null // Commented out due to dependency issues
     private lateinit var viewBinding: ActivityMainBinding
+    
+    companion object {
+        private const val TAG = "MainActivity"
+        private const val REQUEST_CAMERA = 0
+        private const val REQUEST_STORAGE = 1
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStatusBar()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+        
+        // Handle auto-launch from USB detection
+        handleAutoLaunch(intent)
+        
+        // Start USB detection service
+        startUSBDectionService()
+        
+        // Setup debug button
+        viewBinding.debugButton.setOnClickListener {
+            val intent = Intent(this, DebugActivity::class.java)
+            startActivity(intent)
+        }
+        
 //        replaceDemoFragment(DemoMultiCameraFragment())
         replaceDemoFragment(DemoFragment())
 //        replaceDemoFragment(GlSurfaceFragment())
@@ -114,6 +136,36 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         // immersionBar= null // Commented out due to dependency issues
     }
+    
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let { handleAutoLaunch(it) }
+    }
+    
+    private fun handleAutoLaunch(intent: Intent?) {
+        val isAutoLaunch = intent?.getBooleanExtra("auto_launch", false) ?: false
+        val isUSBCameraDetected = intent?.getBooleanExtra("usb_camera_detected", false) ?: false
+        
+        if (isAutoLaunch && isUSBCameraDetected) {
+            Log.d(TAG, "App auto-launched due to USB camera detection")
+            ToastUtils.show("USB camera detected - CarPlayer launched automatically")
+            
+            // Bring app to foreground
+            val bringToFrontIntent = Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            startActivity(bringToFrontIntent)
+        }
+    }
+    
+    private fun startUSBDectionService() {
+        try {
+            USBDetectionService.startService(this)
+            Log.d(TAG, "USB detection service started")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start USB detection service", e)
+        }
+    }
 
     private fun setStatusBar() {
         // Commented out due to ImmersionBar dependency issues
@@ -126,8 +178,4 @@ class MainActivity : AppCompatActivity() {
         // immersionBar?.init()
     }
 
-    companion object {
-        private const val REQUEST_CAMERA = 0
-        private const val REQUEST_STORAGE = 1
-    }
 }

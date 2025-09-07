@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Auto-Launch Settings">
+        
+        <SwitchPreferenceCompat
+            app:key="auto_launch"
+            app:title="Enable Auto-Launch"
+            app:summary="Automatically launch app when USB camera is connected"
+            app:defaultValue="true" />
+            
+        <Preference
+            app:key="battery_optimization"
+            app:title="Battery Optimization"
+            app:summary="Disable battery optimization for reliable auto-launch" />
+            
+    </PreferenceCategory>
+    
+    <PreferenceCategory app:title="Notifications">
+        
+        <Preference
+            app:key="notification_settings"
+            app:title="Notification Settings"
+            app:summary="Configure app notifications" />
+            
+    </PreferenceCategory>
+    
+    <PreferenceCategory app:title="About">
+        
+        <Preference
+            app:key="version"
+            app:title="Version"
+            app:summary="1.0.0" />
+            
+        <Preference
+            app:key="github"
+            app:title="GitHub Repository"
+            app:summary="View source code and report issues" />
+            
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -11,8 +11,17 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    
+    <!-- USB and Auto-launch permissions -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    
     <uses-feature android:name="android.hardware.camera"/>
     <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-feature android:name="android.hardware.usb.host" />
 
     <!--bugly permission need-->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -43,7 +52,62 @@
         </activity>
 
         <activity android:name="com.tj.carplayer.MainActivity"
-            android:theme="@style/Theme.ClinkCameraDemo.NoActionBar" />
+            android:theme="@style/Theme.ClinkCameraDemo.NoActionBar"
+            android:launchMode="singleTop"
+            android:exported="true" />
+            
+        <activity android:name="com.tj.carplayer.SettingsActivity"
+            android:theme="@style/Theme.ClinkCameraDemo"
+            android:exported="false"
+            android:parentActivityName="com.tj.carplayer.MainActivity" />
+            
+        <activity android:name="com.tj.carplayer.DebugActivity"
+            android:theme="@style/Theme.ClinkCameraDemo"
+            android:exported="false"
+            android:parentActivityName="com.tj.carplayer.MainActivity" />
+            
+        <!-- USB Detection Service -->
+        <service
+            android:name="com.tj.carplayer.service.USBDetectionService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="camera" />
+            
+        <!-- Boot Receiver -->
+        <receiver
+            android:name="com.tj.carplayer.receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- USB Device Receiver -->
+        <receiver
+            android:name="com.tj.carplayer.receiver.USBDeviceReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- USB State Receiver -->
+        <receiver
+            android:name="com.tj.carplayer.receiver.USBStateReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="1000">
+                <action android:name="android.hardware.usb.action.USB_STATE" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
