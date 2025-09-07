@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
         
         if (isAutoLaunch && isUSBCameraDetected) {
             Log.d(TAG, "App auto-launched due to USB camera detection")
-            ToastUtils.show("USB camera detected - CarPlayer launched automatically")
+            // ToastUtils.show("USB camera detected - CarPlayer launched automatically")
             
             // Bring app to foreground
             val bringToFrontIntent = Intent(this, MainActivity::class.java).apply {
