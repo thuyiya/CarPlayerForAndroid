@@ -1,0 +1,48 @@
+// Top-level build file where you can add configuration options libuvccommon to all sub-projects/modules.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.4'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    androidXVersion = '1.6.1'
+    versionCompiler = 36
+    versionTarget = 36
+    minSdkVersion = 31
+    versionCode = 1
+    versionNameString = '1.0'
+    javaSourceCompatibility = JavaVersion.VERSION_1_8
+    javaTargetCompatibility = JavaVersion.VERSION_1_8
+//    ndkVersion = '21.0.6113669'
+    supportLibVersion = '27.1.1'
+    versionBuildTool = '27.0.3'
+    kotlinCoreVersion = '1.8.10'
+    kotlinCoroutines = '1.6.4'
+    materialVersion = '1.9.0'
+    constraintlayoutVersion = '2.1.4'
+    lifecycle_version = '2.6.2'
+    quick_version= '2.9.50'
+    dialog_version= '3.2.1'
+    bugly_version = '3.4.4'
+    bugly_native_version = '3.9.0'
+}

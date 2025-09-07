@@ -1,0 +1,62 @@
+apply plugin: 'com.android.library'
+
+android {
+	namespace 'com.jiangdg.uvccamera'
+	compileSdkVersion rootProject.ext.versionCompiler
+
+	compileOptions {
+		sourceCompatibility rootProject.ext.javaSourceCompatibility
+		targetCompatibility rootProject.ext.javaTargetCompatibility
+	}
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+		targetSdkVersion rootProject.ext.versionTarget
+		
+		ndk {
+			abiFilters 'armeabi-v7a', 'arm64-v8a'
+		}
+    }
+    
+    externalNativeBuild {
+        ndkBuild {
+            path "src/main/jni/Android.mk"
+        }
+    }
+
+	lintOptions {
+		checkReleaseBuilds false
+		// Or, if you prefer, you can continue to check for errors in release builds,
+		// but continue the build even when errors are found:
+		abortOnError false
+		// The demo app does not have translations.
+		disable 'MissingTranslation'
+	}
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    
+    packagingOptions {
+        pickFirst 'lib/arm64-v8a/libUVCCamera.so'
+        pickFirst 'lib/armeabi-v7a/libUVCCamera.so'
+        pickFirst 'lib/arm64-v8a/libusb100.so'
+        pickFirst 'lib/armeabi-v7a/libusb100.so'
+        pickFirst 'lib/arm64-v8a/libuvc.so'
+        pickFirst 'lib/armeabi-v7a/libuvc.so'
+        pickFirst 'lib/arm64-v8a/libjpeg-turbo1500.so'
+        pickFirst 'lib/armeabi-v7a/libjpeg-turbo1500.so'
+    }
+}
+
+// Modern NDK build configuration - using externalNativeBuild instead of custom tasks
+
+dependencies {
+    implementation fileTree(dir: new File(buildDir, 'libs'), include: '*.jar')
+	implementation "androidx.appcompat:appcompat:${androidXVersion}"
+	implementation 'com.elvishew:xlog:1.11.0'
+//	implementation project(path: ':libuvccommon')
+}
